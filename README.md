@@ -1,0 +1,1 @@
+# sogou-dict-assistant
