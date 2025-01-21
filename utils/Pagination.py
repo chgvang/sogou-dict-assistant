@@ -38,6 +38,6 @@ class Pagination(object):
         return False
 
 
-    def stream(self, callback):
+    def stream(self, callback, /, *args, **kvargs):
         while self.tryNext():
-            callback(self.url, self.index, self.total)
+            callback(self.url, self.index, self.total, *args, **kvargs)

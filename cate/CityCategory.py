@@ -17,9 +17,9 @@ class CityCategory(Category):
 
 
     # 滚动分页处理大类下的词库列表
-    def fetch(self):
+    def fetch(self, callback):
         for category in self.subCategories:
-            category.fetch()
+            category.fetch(callback)
 
 
     # 解析‘城市’大类，识别下级所有的子类
