@@ -6,12 +6,23 @@ def main(url):
     root = RootCategory(url, 'root')
     root.load()
 
-    root.categories[6].load()
-    root.categories[6].fetch(fetchCallback)
+    futures = root.categories[0].load(loadCallback)
+    for future in futures:
+        while not future.done():
+            pass
+
+    futures = root.categories[0].fetch(fetchCallback)
+    for future in futures:
+        while not future.done():
+            pass
 
 
-def fetchCallback(dictionaries, namepath, url, index, total):
-    print(dictionaries, namepath, url, index, total)
+def loadCallback(url, total, namepath, name):
+    print(url, total, namepath, name)
+
+
+def fetchCallback(url, index, total, namepath, name, dictionaries):
+    print(url, index, total, namepath, name, dictionaries)
 
 
 if __name__ == '__main__':

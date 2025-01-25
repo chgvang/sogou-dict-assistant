@@ -7,5 +7,5 @@ threadPoolExecutor = ThreadPoolExecutor(max_workers = 20)
 
 class ThreadUtils(object):
     @staticmethod
-    def submit(fn, *args, **kwargs):
-        return threadPoolExecutor.submit(fn, *args, **kwargs)
+    def submit(fn, /, *args, **kvargs):
+        return threadPoolExecutor.submit(fn, *args, **kvargs)

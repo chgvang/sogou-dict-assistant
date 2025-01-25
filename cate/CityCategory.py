@@ -10,16 +10,20 @@ class CityCategory(Category):
 
 
     # 解析页面识别子类量
-    def load(self):
+    def load(self, callback = None):
         self.fetchSubCategory()
+        futures = []
         for category in self.subCategories:
-            category.load()
+            futures += category.load(callback)
+        return futures
 
 
     # 滚动分页处理大类下的词库列表
-    def fetch(self, callback):
+    def fetch(self, callback = None):
+        futures = []
         for category in self.subCategories:
-            category.fetch(callback)
+            futures += category.fetch(callback)
+        return futures
 
 
     # 解析‘城市’大类，识别下级所有的子类

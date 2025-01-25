@@ -3,27 +3,12 @@ from utils.HttpUtils import HttpUtils
 
 
 class Pagination(object):
-    def __init__(self, url):
+    def __init__(self, url, total, prefix = None):
         super(Pagination, self).__init__()
         self.url = url
         self.index = 0
-        self.total = 0
-        self.prefix = None
-
-
-    def load(self):
-        pages = HttpUtils.pyquery(self.url).find('#dict_page ul li a')
-
-        # 单页场景（不存在分页器）
-        if pages.size() == 0:
-            self.index = 0
-            self.total = 1
-            return
-
-        # 多页场景（通过分页器采集分页信息）
-        self.index = 0
-        self.total = int(pages.eq(-2).text())
-        self.prefix = pages.eq(-2).attr('href')[0:-len(str(self.total))]
+        self.total = total
+        self.prefix = prefix
 
 
     def hasNext(self):
@@ -39,5 +24,8 @@ class Pagination(object):
 
 
     def stream(self, callback, /, *args, **kvargs):
+        results = []
         while self.tryNext():
-            callback(self.url, self.index, self.total, *args, **kvargs)
+            pageArgs = (self.url, self.index, self.total)
+            results.append(callback(*args + pageArgs, **kvargs))
+        return results
