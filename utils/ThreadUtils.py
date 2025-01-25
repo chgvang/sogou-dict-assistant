@@ -9,3 +9,10 @@ class ThreadUtils(object):
     @staticmethod
     def submit(fn, /, *args, **kvargs):
         return threadPoolExecutor.submit(fn, *args, **kvargs)
+
+
+    @staticmethod
+    def wait4done(futures):
+        for future in futures:
+            while not future.done():
+                pass

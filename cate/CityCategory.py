@@ -4,8 +4,8 @@ from utils.HttpUtils import HttpUtils
 
 
 class CityCategory(Category):
-    def __init__(self, url, name):
-        super(CityCategory, self).__init__(url, name)
+    def __init__(self, url, name, parent = None):
+        super(CityCategory, self).__init__(url, name, parent)
         self.subCategories = None
 
 

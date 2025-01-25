@@ -9,8 +9,7 @@ from utils.ThreadUtils import ThreadUtils
 
 class Category(Base):
     def __init__(self, url, name, parent = None):
-        super(Category, self).__init__(url, name)
-        self.parent = parent
+        super(Category, self).__init__(url, name, parent)
         self.pagination = None
 
 
@@ -46,10 +45,3 @@ class Category(Base):
             name = item.find('.detail_title a').text()
             dictionaries.append(Dictionary(uri, name))
         CallUtils.call('callback', url, index, total, self.namepath(), self.name, dictionaries, **kvargs)
-
-
-    def namepath(self):
-        if self.parent == None:
-            return self.name
-        else:
-            return self.parent.name + '/' + self.name

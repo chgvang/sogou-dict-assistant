@@ -18,9 +18,9 @@ class RootCategory(Base):
         for item in items:
             url, name = self.href(item.attr('href')), item.text()
             if (self.isCityCategory(url)):
-                self.categories.append(CityCategory(url, name))
+                self.categories.append(CityCategory(url, name, self))
             else:
-                self.categories.append(Category(url, name))
+                self.categories.append(Category(url, name, self))
 
 
     # 通过地址识别指定的大类是否为‘城市’大类

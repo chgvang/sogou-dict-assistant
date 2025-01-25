@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+import os
+
+
+class FileUtils(object):
+    @staticmethod
+    def exists(path):
+        return os.path.exists(path)
+
+
+    @staticmethod
+    def isdir(path):
+        return os.path.isdir(path)
+
+
+    @staticmethod
+    def isfile(path):
+        return os.path.isfile(path)
+
+
+    @staticmethod
+    def mkdir(path):
+        if FileUtils.exists(path) and not FileUtils.isdir(path):
+            os.remove(path)
+        if not FileUtils.exists(path):
+            os.makedirs(path)
+
+
+    @staticmethod
+    def rename(path, name):
+        href = FileUtils.href(path, name)
+        os.renames(path, href)
+
+
+    @staticmethod
+    def href(path, name):
+        dir = os.path.dirname(path)
+        return FileUtils.relpath(dir, name)
+
+
+    @staticmethod
+    def relpath(path, *names):
+        return os.path.join(path, *names)

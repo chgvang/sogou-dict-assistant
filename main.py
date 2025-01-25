@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 from cate.RootCategory import RootCategory
+from utils.ThreadUtils import ThreadUtils
 
 
 def main(url):
-    root = RootCategory(url, 'root')
+    root = RootCategory(url, 'sogou-dict')
     root.load()
 
     futures = root.categories[0].load(loadCallback)
-    for future in futures:
-        while not future.done():
-            pass
+    ThreadUtils.wait4done(futures)
 
     futures = root.categories[0].fetch(fetchCallback)
-    for future in futures:
-        while not future.done():
-            pass
+    ThreadUtils.wait4done(futures)
 
 
 def loadCallback(url, total, namepath, name):
