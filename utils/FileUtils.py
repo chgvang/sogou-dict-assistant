@@ -41,3 +41,15 @@ class FileUtils(object):
     @staticmethod
     def relpath(path, *names):
         return os.path.join(path, *names)
+
+
+    @staticmethod
+    def openWriter(path):
+        return open(path, 'w')
+
+
+    @staticmethod
+    def closeWriter(writers):
+        for writer in writers:
+            writer.flush()
+            writer.close()

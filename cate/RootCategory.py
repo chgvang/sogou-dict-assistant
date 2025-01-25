@@ -2,7 +2,9 @@
 from cate.Base         import Base
 from cate.Category     import Category
 from cate.CityCategory import CityCategory
+from utils.CallUtils   import CallUtils
 from utils.HttpUtils   import HttpUtils
+from utils.ThreadUtils import ThreadUtils
 
 
 class RootCategory(Base):
@@ -11,8 +13,13 @@ class RootCategory(Base):
         self.categories = None
 
 
+    # 加载页面识别所有词库大类
+    def load(self, callback = None):
+        return [ThreadUtils.submit(self.pending, callback)]
+
+
     # 解析页面识别所有词库大类
-    def load(self):
+    def pending(self, callback):
         self.categories = []
         items = HttpUtils.pyquery(self.url).find('#dict_main_3 .dict_category_list_title a').items()
         for item in items:
@@ -21,6 +28,7 @@ class RootCategory(Base):
                 self.categories.append(CityCategory(url, name, self))
             else:
                 self.categories.append(Category(url, name, self))
+        CallUtils.call(callback, self.url, self.namepath(), self.name)
 
 
     # 通过地址识别指定的大类是否为‘城市’大类

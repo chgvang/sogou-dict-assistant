@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 from cate.RootCategory import RootCategory
+from trans.Fetcher     import Fetcher
 from utils.ThreadUtils import ThreadUtils
 
 
+fetcher = Fetcher('URL')
 def main(url):
     root = RootCategory(url, 'sogou-dict')
-    root.load()
-
-    futures = root.categories[0].load(loadCallback)
+    futures = root.load(fetcher.loadRoot)
     ThreadUtils.wait4done(futures)
 
-    futures = root.categories[0].fetch(fetchCallback)
+    futures = root.categories[6].load(fetcher.loadCategory)
     ThreadUtils.wait4done(futures)
 
-
-def loadCallback(url, total, namepath, name):
-    print(url, total, namepath, name)
-
-
-def fetchCallback(url, index, total, namepath, name, dictionaries):
-    print(url, index, total, namepath, name, dictionaries)
+    futures = root.categories[6].fetch(fetcher.fetchCategory)
+    ThreadUtils.wait4done(futures, fetcher.flush)
 
 
 if __name__ == '__main__':
