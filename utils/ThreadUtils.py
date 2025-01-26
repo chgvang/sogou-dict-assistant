@@ -4,7 +4,7 @@ from utils.CallUtils    import CallUtils
 import threading
 
 
-threadPoolExecutor = ThreadPoolExecutor(max_workers = 20)
+threadPoolExecutor = ThreadPoolExecutor(max_workers = 16)
 
 
 class ThreadUtils(object):
@@ -19,6 +19,11 @@ class ThreadUtils(object):
             while not future.done():
                 pass
         CallUtils.call(callback, *args, **kvargs)
+
+
+    @staticmethod
+    def call4done(futures, callback, /, *args, **kvargs):
+        return ThreadUtils.submit(ThreadUtils.wait4done, futures, callback, *args, **kvargs)
 
 
     @staticmethod
