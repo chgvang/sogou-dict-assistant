@@ -44,12 +44,39 @@ class FileUtils(object):
 
 
     @staticmethod
+    def subdirs(path):
+        dirs, subs = [], os.listdir(path)
+        for sub in subs:
+            if FileUtils.isdir(FileUtils.relpath(path, sub)):
+                dirs.append(sub)
+        return dirs
+
+
+    @staticmethod
+    def countLines(path):
+        count = 0
+        with FileUtils.openReader(path) as reader:
+            for line in reader:
+                count += 1
+        return count
+
+
+    @staticmethod
     def openWriter(path):
         return open(path, 'w')
 
 
     @staticmethod
-    def closeWriter(writers):
-        for writer in writers:
-            writer.flush()
-            writer.close()
+    def closeWriter(*writers):
+        [writer.flush() for writer in writers]
+        FileUtils.close(*writers)
+
+
+    @staticmethod
+    def openReader(path):
+        return open(path, 'r')
+
+
+    @staticmethod
+    def close(*files):
+        [file.close() for file in files]

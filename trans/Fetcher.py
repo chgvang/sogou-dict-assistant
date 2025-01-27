@@ -36,4 +36,4 @@ class Fetcher(object):
 
 
     def flush(self):
-        FileUtils.closeWriter(self.writers.values())
+        FileUtils.closeWriter(*list(self.writers.values()))
