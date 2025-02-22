@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from utils.CallUtils   import CallUtils
 from utils.FileUtils   import FileUtils
+from utils.HttpUtils   import HttpUtils
 from utils.ThreadUtils import ThreadUtils
 
 
@@ -47,10 +48,19 @@ class Downloader(RootDownloader):
 
 
     # 滚动下载
-    def down(self):
-        # TODO down
-        if self.reader == None:
-            pass
+    def download(self):
+        futures = []
+        if self.reader != None:
+            for line in self.reader:
+                futures.append(ThreadUtils.submit(self.transfile, line.strip()))
+        [futures.extend(d.download()) for d in self.subDownloaders]
+        return futures
+
+
+    # 传输文件
+    def transfile(self, url):
+        dest = FileUtils.relpath(self.namepath(), HttpUtils.downname(url))
+        return HttpUtils.download(url, dest)
 
 
     # 释放资源

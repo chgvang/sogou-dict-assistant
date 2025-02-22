@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-from concurrent.futures import ThreadPoolExecutor
 from utils.CallUtils    import CallUtils
-import threading
+from concurrent.futures import ThreadPoolExecutor
 
 
 threadPoolExecutor = ThreadPoolExecutor(max_workers = 16)
@@ -24,8 +23,3 @@ class ThreadUtils(object):
     @staticmethod
     def call4done(futures, callback, /, *args, **kvargs):
         return ThreadUtils.submit(ThreadUtils.wait4done, futures, callback, *args, **kvargs)
-
-
-    @staticmethod
-    def locker():
-        return threading.Lock()

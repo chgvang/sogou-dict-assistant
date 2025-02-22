@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from utils.DateUtils   import DateUtils
 from utils.FileUtils   import FileUtils
-from utils.ThreadUtils import ThreadUtils
+from utils.LockUtils   import LockUtils
 
 
 class Fetcher(object):
@@ -24,7 +24,7 @@ class Fetcher(object):
     def loadCategory(self, url, total, namepath, name):
         FileUtils.mkdir(namepath)
         self.writers[namepath] = FileUtils.openWriter(FileUtils.relpath(namepath, self.name))
-        self.lockers[namepath] = ThreadUtils.locker()
+        self.lockers[namepath] = LockUtils.locker()
 
 
     # 识别到词库字典文件
