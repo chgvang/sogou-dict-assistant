@@ -45,7 +45,7 @@ class FileUtils(object):
 
     @staticmethod
     def subdirs(path):
-        dirs, subs = [], os.listdir(path)
+        dirs, subs = [], sorted(os.listdir(path))
         for sub in subs:
             if FileUtils.isdir(FileUtils.relpath(path, sub)):
                 dirs.append(sub)
@@ -62,8 +62,8 @@ class FileUtils(object):
 
 
     @staticmethod
-    def openWriter(path):
-        return open(path, 'w')
+    def openWriter(path, mode = 'w'):
+        return open(path, mode)
 
 
     @staticmethod
@@ -73,8 +73,8 @@ class FileUtils(object):
 
 
     @staticmethod
-    def openReader(path):
-        return open(path, 'r')
+    def openReader(path, mode = 'r'):
+        return open(path, mode)
 
 
     @staticmethod

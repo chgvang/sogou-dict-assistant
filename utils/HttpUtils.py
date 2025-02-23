@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
+from utils.FileUtils   import FileUtils
 from pyquery           import PyQuery
-from pySmartDL         import SmartDL
 from requests.adapters import HTTPAdapter
 from urllib.parse      import urljoin
 from urllib3           import Retry
@@ -27,8 +27,8 @@ session.mount('http://', httpAdapter)
 
 class HttpUtils(object):
     @staticmethod
-    def get(url):
-        return session.get(url)
+    def get(url, stream = False):
+        return session.get(url, stream = stream)
 
 
     @staticmethod
@@ -42,18 +42,16 @@ class HttpUtils(object):
 
 
     @staticmethod
-    def downname(url):
-        name = None
-        match = re.search('filename="(.+)"', requests.get(url, stream = True).headers.get('Content-Disposition', ''))
+    def download(url, dest = './'):
+        response = HttpUtils.get(url, True)
+
+        filename = None
+        match = re.search('filename="(.+)"', response.headers.get('Content-Disposition', ''))
         if match:
-            name = match.group(1).encode('latin1').decode('UTF-8', errors = 'ignore')
-        if not name:
-            name = url.split('/')[-1].split('?')[0]
-        return name
+            filename = match.group(1).encode('latin1').decode('UTF-8', errors = 'ignore')
+        if not filename:
+            filename = url.split('/')[-1].split('?')[0]
 
-
-    @staticmethod
-    def download(url, dest = './', threads = 16, progress_bar = False, blocking = True):
-        dl = SmartDL(url, dest, threads = threads, progress_bar = progress_bar)
-        dl.start(blocking = blocking)
-        return dl
+        with FileUtils.openWriter(FileUtils.relpath(dest, filename), 'wb') as file:
+            for chunk in response.iter_content(chunk_size = 8192):
+                file.write(chunk)

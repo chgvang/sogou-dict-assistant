@@ -52,15 +52,9 @@ class Downloader(RootDownloader):
         futures = []
         if self.reader != None:
             for line in self.reader:
-                futures.append(ThreadUtils.submit(self.transfile, line.strip()))
+                futures.append(ThreadUtils.submit(HttpUtils.download, line.strip(), self.namepath()))
         [futures.extend(d.download()) for d in self.subDownloaders]
         return futures
-
-
-    # 传输文件
-    def transfile(self, url):
-        dest = FileUtils.relpath(self.namepath(), HttpUtils.downname(url))
-        return HttpUtils.download(url, dest)
 
 
     # 释放资源
@@ -73,7 +67,16 @@ class Downloader(RootDownloader):
     # 获取下载器列表
     @staticmethod
     def list(name, dict):
-        root, downloaders = RootDownloader(name, dict), []
+        root, downloaders = RootDownloader(name, dict), DownloaderList()
         for dir in FileUtils.subdirs(name):
             downloaders.append(Downloader(dir, dict, root))
         return downloaders
+
+
+class DownloaderList(list):
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        [d.flush() for d in self]

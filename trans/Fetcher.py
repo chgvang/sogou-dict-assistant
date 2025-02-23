@@ -35,5 +35,9 @@ class Fetcher(object):
                 writer.write('%(url)s\n' % {'url': dictionary.url})
 
 
-    def flush(self):
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
         FileUtils.closeWriter(*list(self.writers.values()))
