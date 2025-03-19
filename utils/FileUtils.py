@@ -53,6 +53,15 @@ class FileUtils(object):
 
 
     @staticmethod
+    def subfiles(path):
+        files, subs = [], sorted(os.listdir(path))
+        for sub in subs:
+            if FileUtils.isfile(FileUtils.relpath(path, sub)):
+                files.append(sub)
+        return files
+
+
+    @staticmethod
     def countLines(path):
         count = 0
         with FileUtils.openReader(path) as reader:

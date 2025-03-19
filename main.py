@@ -2,6 +2,7 @@
 from cate.RootCategory import RootCategory
 from trans.Downloader  import Downloader
 from trans.Fetcher     import Fetcher
+from trans.Resolver    import Resolver
 from utils.ThreadUtils import ThreadUtils
 from rich.progress     import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TimeElapsedColumn
 
@@ -63,7 +64,7 @@ def download(downloaders, progress):
         futures.append(ThreadUtils.call4done(subFutures, lambda: progress.update(task, advance = 1)))
     ThreadUtils.wait4done(futures, lambda: [progress.update(t, visible = False) for t in subTasks])
 
-    task = progress.add_task('[bold]◒ Download Dictionaries', total = len(downloaders))
+    task = progress.add_task('[bold]◒ Download dictionaries', total = len(downloaders))
     futures, subTasks = [], []
     for index, downloader in enumerate(downloaders):
         namepath = downloader.namepath()
@@ -80,8 +81,45 @@ def download(downloaders, progress):
     ThreadUtils.wait4done(futures, lambda: [progress.update(t, visible = False) for t in subTasks])
 
 
+def resolve(resolvers, saveas, progress):
+    totals = {}
+    task = progress.add_task('[bold]◓ Load resolver', total = len(resolvers))
+    futures, subTasks = [], []
+    for index, resolver in enumerate(resolvers):
+        namepath = resolver.namepath()
+        totals[namepath] = 0
+        # 创建大类的任务进度条
+        flag = '┣━' if index + 1 < len(resolvers) else '┗━'
+        subTask = progress.add_task(flag + namepath, total = None)
+        subTasks.append(subTask)
+        # 执行大类任务（返回包含子分类的future列表），大类或子分类完成时更新对应的字典数
+        subFutures = resolver.load(lambda c, p = namepath: totals.update({p: totals[p] + c}))
+        futures += subFutures
+        # 更新大类总进度数，大类下future完成时更新大类进度，全部完成时更新总进度
+        progress.update(subTask, total = len(subFutures))
+        [f.add_done_callback(lambda f, t = subTask: progress.update(t, advance = 1)) for f in subFutures]
+        futures.append(ThreadUtils.call4done(subFutures, lambda: progress.update(task, advance = 1)))
+    ThreadUtils.wait4done(futures, lambda: [progress.update(t, visible = False) for t in subTasks])
+
+    task = progress.add_task('[bold]◒ Resolve dictionaries', total = len(resolvers))
+    futures, subTasks = [], []
+    for index, resolver in enumerate(resolvers):
+        namepath = resolver.namepath()
+        # 创建大类的任务进度条
+        flag = '┣━' if index + 1 < len(resolvers) else '┗━'
+        subTask = progress.add_task(flag + namepath, total = totals[namepath])
+        subTasks.append(subTask)
+        # 执行大类任务（返回包含子分类的future列表）
+        subFutures = ThreadUtils.invoke(resolver.resolve, saveas)
+        futures += subFutures
+        # 大类下future完成时更新大类进度，全部完成时更新总进度
+        [f.add_done_callback(lambda f, t = subTask: progress.update(t, advance = 1)) for f in subFutures]
+        futures.append(ThreadUtils.call4done(subFutures, lambda: progress.update(task, advance = 1)))
+    ThreadUtils.wait4done(futures, lambda: [progress.update(t, visible = False) for t in subTasks])
+
+
 if __name__ == '__main__':
-    url, name, dict = 'https://pinyin.sogou.com/dict/', 'sogou-dict', 'dict.url'
+    url, name, dict, suffix, saveas = 'https://pinyin.sogou.com/dict/', 'sogou-dict', 'dict.url', '.scel', '.txt'
 
     with Progress(
         '[green][progress.description]{task.description}', BarColumn(),
@@ -89,3 +127,4 @@ if __name__ == '__main__':
     ) as progress:
         with Fetcher(dict) as fetcher: fetch(RootCategory(url, name), fetcher, progress)
         with Downloader.list(name, dict) as downloaders: download(downloaders, progress)
+        resolve(Resolver.list(name, suffix), saveas, progress)
