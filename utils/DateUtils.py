@@ -4,7 +4,7 @@ import time
 
 class DateUtils(object):
     @staticmethod
-    def format(pattern, datetime = None):
-        if datetime == None:
+    def format(pattern, datetime=None):
+        if datetime is None:
             datetime = time.localtime()
         return time.strftime(pattern, datetime)

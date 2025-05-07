@@ -7,16 +7,13 @@ class FileUtils(object):
     def exists(path):
         return os.path.exists(path)
 
-
     @staticmethod
     def isdir(path):
         return os.path.isdir(path)
 
-
     @staticmethod
     def isfile(path):
         return os.path.isfile(path)
-
 
     @staticmethod
     def mkdir(path):
@@ -25,23 +22,19 @@ class FileUtils(object):
         if not FileUtils.exists(path):
             os.makedirs(path)
 
-
     @staticmethod
     def rename(path, name):
         href = FileUtils.href(path, name)
         os.renames(path, href)
 
-
     @staticmethod
     def href(path, name):
-        dir = os.path.dirname(path)
-        return FileUtils.relpath(dir, name)
-
+        parent = os.path.dirname(path)
+        return FileUtils.relpath(parent, name)
 
     @staticmethod
     def relpath(path, *names):
         return os.path.join(path, *names)
-
 
     @staticmethod
     def subdirs(path):
@@ -51,7 +44,6 @@ class FileUtils(object):
                 dirs.append(sub)
         return dirs
 
-
     @staticmethod
     def subfiles(path):
         files, subs = [], sorted(os.listdir(path))
@@ -60,31 +52,26 @@ class FileUtils(object):
                 files.append(sub)
         return files
 
-
     @staticmethod
-    def countLines(path):
+    def count_lines(path):
         count = 0
-        with FileUtils.openReader(path) as reader:
-            for line in reader:
+        with FileUtils.open_reader(path) as reader:
+            for _ in reader:
                 count += 1
         return count
 
-
     @staticmethod
-    def openWriter(path, mode = 'w'):
+    def open_writer(path, mode='w'):
         return open(path, mode)
 
-
     @staticmethod
-    def closeWriter(*writers):
+    def close_writer(*writers):
         [writer.flush() for writer in writers]
         FileUtils.close(*writers)
 
-
     @staticmethod
-    def openReader(path, mode = 'r'):
+    def open_reader(path, mode='r'):
         return open(path, mode)
-
 
     @staticmethod
     def close(*files):
